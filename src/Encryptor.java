@@ -57,7 +57,7 @@ public class Encryptor
 
         for (int i = 0; i < letterBlock[0].length; i++) {
             for (int j = 0; j < letterBlock.length; j++) {
-                toReturn += letterBlock[i][j];
+                toReturn += letterBlock[j][i];
             }
         }
 
@@ -72,17 +72,18 @@ public class Encryptor
      */
     public String encryptMessage(String message)
     {
+        letterBlock = new String[numRows][numCols];
         String toReturn = "";
 
-        for (int i = 0, p = 0; i < message.length(); i += p) {
+        for (int i = 0, p = 0; i < message.length(); i = p) {
             if (message.length() < (numRows * numCols)) {
                 fillBlock(message);
                 return encryptBlock();
             } else {
-                if (p + (numRows * numCols) < message.length()) p = message.length();
+                if (p + (numRows * numCols) > message.length()) p = message.length();
+                else p += (numRows * numCols);
                 fillBlock(message.substring(i, p));
                 toReturn += encryptBlock();
-                p += (numRows * numCols);
                 letterBlock = new String[numRows][numCols];
             }
         }
@@ -115,30 +116,33 @@ public class Encryptor
     public String decryptMessage(String encryptedMessage)
     {
         letterBlock = new String[numRows][numCols];
-        String toReturn = "";
-        for (int i = 0, c = 0; i < encryptedMessage.length(); i++) {
+        String toReturn = ""; boolean running = true;
+        for (int i = 0; running; i = i) {
             for (int j = 0, k = 0; j < letterBlock[0].length; k++) {
-                letterBlock[j][k] = encryptedMessage.charAt(i)+"";
+                letterBlock[k][j] = encryptedMessage.charAt(i)+"";
 
+                i++;
                 if (k == letterBlock.length - 1) {
-                    k = 0; j++;
+                    k = -1; j++;
                 }
             }
 
-            for (int j = 0; j < letterBlock.length; j++) {
-                for (int k = 0; k < letterBlock[i].length; k++) {
-                    toReturn += letterBlock[j][k];
+            for (int j = 0, k = 0; j < letterBlock.length; k++) {
+                toReturn += letterBlock[j][k];
+
+                if (k == letterBlock[j].length - 1) {
+                    k = -1; j++;
                 }
             }
 
-            if (encryptedMessage.substring(0, i).length() != toReturn.length()) letterBlock = new String[numRows][numCols];
+            if (toReturn.length() != encryptedMessage.length()) letterBlock = new String[numRows][numCols];
+            else running = false;
         }
 
-        StringBuilder str = new StringBuilder(toReturn);
-        while (str.lastIndexOf("A") == str.length() - 1) {
-            str.setCharAt(str.lastIndexOf("A"), '\0');
+        while (toReturn.lastIndexOf("A") == toReturn.length() - 1) {
+            toReturn = toReturn.substring(0, toReturn.length() - 1);
         }
 
-        return str.toString();
+        return toReturn;
     }
 }
