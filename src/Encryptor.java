@@ -118,10 +118,9 @@ public class Encryptor
         letterBlock = new String[numRows][numCols];
         String toReturn = ""; boolean running = true;
         for (int i = 0; running; i = i) {
-            for (int j = 0, k = 0; j < letterBlock[0].length; k++) {
+            for (int j = 0, k = 0; j < letterBlock[0].length; k++, i++) {
                 letterBlock[k][j] = encryptedMessage.charAt(i)+"";
 
-                i++;
                 if (k == letterBlock.length - 1) {
                     k = -1; j++;
                 }
@@ -144,5 +143,32 @@ public class Encryptor
         }
 
         return toReturn;
+    }
+
+    public String characterShift(String message, int shift) {
+        String toReturn = "";
+
+        for (int i = 0; i < message.length(); i++) {
+            toReturn += (char) (message.charAt(i) + shift) + "";
+        }
+
+        return toReturn;
+    }
+
+    public String characterDeShift(String message, int shift) {
+        String toReturn = "";
+
+        for (int i = 0; i < message.length(); i++) {
+            toReturn += (char) (message.charAt(i) - shift) + "";
+        }
+
+        return toReturn;
+    }
+    public String superEncryptMessage(String message) {
+        return encryptMessage(characterShift(message, 2));
+    }
+
+    public String superDecryptMessage(String message) {
+        return decryptMessage(characterDeShift(message, 2));
     }
 }
